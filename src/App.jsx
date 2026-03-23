@@ -9,10 +9,29 @@ import FoodSummary from './components/FoodSummary';
 import FoodManager from './pages/FoodManager';
 import './App.css';
 
+// Load a setting from localStorage with a fallback default
+function usePersisted(key, defaultValue) {
+  const [value, setValue] = useState(() => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored !== null ? JSON.parse(stored) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  });
+
+  function setPersisted(newValue) {
+    setValue(newValue);
+    localStorage.setItem(key, JSON.stringify(newValue));
+  }
+
+  return [value, setPersisted];
+}
+
 function Calculator({ dryFoods, wetFoods, treats }) {
-  const [weightKg, setWeightKg] = useState(8.78);
-  const [targetWeightKg, setTargetWeightKg] = useState(6.5);
-  const [factor, setFactor] = useState(0.8);
+  const [weightKg, setWeightKg] = usePersisted('maya-weight', 8.78);
+  const [targetWeightKg, setTargetWeightKg] = usePersisted('maya-target-weight', 6.5);
+  const [factor, setFactor] = usePersisted('maya-factor', 0.9);
   const [selectedTreats, setSelectedTreats] = useState([]);
 
   const dailyCalories = calculateDailyCalories(weightKg, factor);
