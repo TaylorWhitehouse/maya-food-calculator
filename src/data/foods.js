@@ -40,8 +40,20 @@ export const defaultDryFoods = [
 export const defaultTreats = [
   {
     id: 'greenies-petite',
-    name: 'Greenies (Petite, 15-25 lbs)',
+    name: 'Greenies (Petite, whole)',
     brand: 'Greenies',
     kcalPerTreat: 53,
+  },
+  {
+    id: 'greenies-petite-half',
+    name: 'Greenies (Petite, half)',
+    brand: 'Greenies',
+    kcalPerTreat: 27,
+  },
+  {
+    id: 'virbac-hextra-small',
+    name: 'Virbac C.E.T. HEXtra Chew (Small)',
+    brand: 'Virbac',
+    kcalPerTreat: 32,
   },
 ];

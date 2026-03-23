@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { defaultDryFoods, defaultWetFoods, defaultTreats } from '../data/foods';
 
-// Load from localStorage or fall back to defaults
-function loadFromStorage(key, fallback) {
+// Load from localStorage, merging in any new defaults the user doesn't have yet
+function loadFromStorage(key, defaults) {
   try {
     const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
+    if (!stored) return defaults;
+    const parsed = JSON.parse(stored);
+    const existingIds = new Set(parsed.map((item) => item.id));
+    const missing = defaults.filter((d) => !existingIds.has(d.id));
+    return missing.length ? [...parsed, ...missing] : parsed;
   } catch {
-    return fallback;
+    return defaults;
   }
 }
 
