@@ -7,7 +7,7 @@ import {
   cupsForCalories,
 } from '../utils/calories';
 
-export default function MealCalculator({ dryFoods, wetFoods, foodCalories }) {
+export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMealCaloriesChange }) {
   const [selectedDry, setSelectedDry] = useState(dryFoods[0].id);
   const [selectedWet, setSelectedWet] = useState(wetFoods[0].id);
   const [mode, setMode] = useState('mix'); // 'dry', 'wet', 'mix'
@@ -74,6 +74,20 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories }) {
     displayWetKcal = Math.round(result.remainingKcal);
     overBudget = result.overBudget;
   }
+
+  // Report actual meal calories back to parent
+  useEffect(() => {
+    if (onMealCaloriesChange) {
+      const showDry = mode === 'dry' || mode === 'mix';
+      const showWet = mode === 'wet' || mode === 'mix';
+      onMealCaloriesChange({
+        dryKcal: showDry ? displayDryKcal : 0,
+        wetKcal: showWet ? displayWetKcal : 0,
+        dryFoodName: showDry ? dryFood.name : null,
+        wetFoodName: showWet ? wetFood.name : null,
+      });
+    }
+  }, [displayDryKcal, displayWetKcal, mode, dryFood?.name, wetFood?.name]);
 
   function handleWetGramsChange(value) {
     const grams = parseFloat(value);

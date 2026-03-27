@@ -299,6 +299,49 @@ header h1 {
   font-size: 1rem;
 }
 
+/* Total consumption card */
+.total-card {
+  background: #c9b99a;
+  color: #2d2015;
+}
+
+.total-card h2 {
+  color: #2d2015;
+}
+
+.total-card .summary-row span:first-child {
+  color: rgba(45, 32, 21, 0.65);
+}
+
+.total-card .summary-row span:last-child {
+  color: rgba(45, 32, 21, 0.65);
+}
+
+.total-card .summary-row.total {
+  font-size: 1rem;
+}
+
+.total-card .summary-row.total span:first-child {
+  font-size: 1.05rem;
+}
+
+.total-card .summary-row.total span {
+  color: #2d2015;
+}
+
+.total-card .summary-row.total {
+  border-top: 1px solid rgba(45, 32, 21, 0.2);
+}
+
+.total-card .target-comparison {
+  border-top: none;
+  font-weight: 400;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: 0;
+  padding-top: 4px;
+}
+
 /* Food selectors */
 .food-selectors {
   margin-bottom: 12px;

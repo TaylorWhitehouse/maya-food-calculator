@@ -33,6 +33,7 @@ function Calculator({ dryFoods, wetFoods, treats }) {
   const [targetWeightKg, setTargetWeightKg] = usePersisted('maya-target-weight', 6.5);
   const [factor, setFactor] = usePersisted('maya-factor', 0.9);
   const [selectedTreats, setSelectedTreats] = useState([]);
+  const [mealCalories, setMealCalories] = useState({ dryKcal: 0, wetKcal: 0, dryFoodName: null, wetFoodName: null });
 
   const dailyCalories = calculateDailyCalories(weightKg, factor);
 
@@ -86,7 +87,38 @@ function Calculator({ dryFoods, wetFoods, treats }) {
           dryFoods={dryFoods}
           wetFoods={wetFoods}
           foodCalories={Math.max(0, foodCalories)}
+          onMealCaloriesChange={setMealCalories}
         />
+
+        <div className="card total-card">
+          <h2>Total Daily Consumption</h2>
+          {mealCalories.dryFoodName && (
+            <div className="summary-row">
+              <span>{mealCalories.dryFoodName}</span>
+              <span>{mealCalories.dryKcal} kcal</span>
+            </div>
+          )}
+          {mealCalories.wetFoodName && (
+            <div className="summary-row">
+              <span>{mealCalories.wetFoodName}</span>
+              <span>{mealCalories.wetKcal} kcal</span>
+            </div>
+          )}
+          {totalTreatCalories > 0 && (
+            <div className="summary-row">
+              <span>Treats</span>
+              <span>{totalTreatCalories} kcal</span>
+            </div>
+          )}
+          <div className="summary-row total">
+            <span>Total</span>
+            <span>{mealCalories.dryKcal + mealCalories.wetKcal + totalTreatCalories} kcal</span>
+          </div>
+          <div className="summary-row target-comparison">
+            <span>Daily target</span>
+            <span>{Math.round(dailyCalories)} kcal</span>
+          </div>
+        </div>
       </main>
     </div>
   );
