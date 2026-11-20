@@ -193,7 +193,7 @@ function FoodSection({ title, type, items, fields, saveFood, deleteFood }) {
 export default function FoodManager({ dryFoods, wetFoods, treats, saveFood, deleteFood }) {
   return (
     <div className="app">
-      <header>
+      <header className="app-header">
         <Link to="/" className="back-link">&larr; Back to calculator</Link>
         <h1>Manage Foods</h1>
       </header>

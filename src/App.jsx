@@ -5,7 +5,9 @@ import useFoods from './hooks/useFoods';
 import WeightInput from './components/WeightInput';
 import MealCalculator from './components/MealCalculator';
 import TreatBudget from './components/TreatBudget';
-import FoodSummary from './components/FoodSummary';
+import DailyOverview from './components/DailyOverview';
+import DailyTotal from './components/DailyTotal';
+import { Heart, Sparkle } from './components/Icons';
 import FoodManager from './pages/FoodManager';
 import './App.css';
 
@@ -54,12 +56,30 @@ function Calculator({ dryFoods, wetFoods, treats }) {
 
   return (
     <div className="app">
-      <header>
-        <img src="/maya.jpg" alt="Maya the cavapoo" className="maya-avatar" />
+      <header className="app-header">
+        <div className="avatar-wrap">
+          <Heart className="deco deco-heart lg" />
+          <Heart className="deco deco-heart sm" />
+          <Sparkle className="deco deco-sparkle" />
+          <img src="/maya.jpg" alt="Maya the cavapoo" className="maya-avatar" />
+        </div>
         <h1>Maya's Food Calculator</h1>
+        <div className="pill-row">
+          <span className="pill">Cavapoo</span>
+          <span className="pill">Goal {targetWeightKg} kg</span>
+        </div>
       </header>
 
       <main>
+        <DailyOverview
+          dailyCalories={dailyCalories}
+          factor={factor}
+          dryKcal={mealCalories.dryKcal}
+          wetKcal={mealCalories.wetKcal}
+          treatKcal={totalTreatCalories}
+          foodCalories={foodCalories}
+        />
+
         <WeightInput
           weightKg={weightKg}
           onWeightChange={setWeightKg}
@@ -67,13 +87,6 @@ function Calculator({ dryFoods, wetFoods, treats }) {
           onTargetWeightChange={setTargetWeightKg}
           factor={factor}
           onFactorChange={setFactor}
-          dailyCalories={dailyCalories}
-        />
-
-        <FoodSummary
-          dailyCalories={dailyCalories}
-          treatCalories={totalTreatCalories}
-          foodCalories={foodCalories}
         />
 
         <TreatBudget
@@ -90,35 +103,11 @@ function Calculator({ dryFoods, wetFoods, treats }) {
           onMealCaloriesChange={setMealCalories}
         />
 
-        <div className="card total-card">
-          <h2>Total Daily Consumption</h2>
-          {mealCalories.dryFoodName && (
-            <div className="summary-row">
-              <span>{mealCalories.dryFoodName}</span>
-              <span>{mealCalories.dryKcal} kcal</span>
-            </div>
-          )}
-          {mealCalories.wetFoodName && (
-            <div className="summary-row">
-              <span>{mealCalories.wetFoodName}</span>
-              <span>{mealCalories.wetKcal} kcal</span>
-            </div>
-          )}
-          {totalTreatCalories > 0 && (
-            <div className="summary-row">
-              <span>Treats</span>
-              <span>{totalTreatCalories} kcal</span>
-            </div>
-          )}
-          <div className="summary-row total">
-            <span>Total</span>
-            <span>{mealCalories.dryKcal + mealCalories.wetKcal + totalTreatCalories} kcal</span>
-          </div>
-          <div className="summary-row target-comparison">
-            <span>Daily target</span>
-            <span>{Math.round(dailyCalories)} kcal</span>
-          </div>
-        </div>
+        <DailyTotal
+          mealCalories={mealCalories}
+          treatCalories={totalTreatCalories}
+          dailyCalories={dailyCalories}
+        />
       </main>
     </div>
   );

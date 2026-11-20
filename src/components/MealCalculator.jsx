@@ -6,6 +6,8 @@ import {
   gramsForCalories,
   cupsForCalories,
 } from '../utils/calories';
+import { sliderFill } from '../utils/sliderFill';
+import { BowlIcon, ChevronDown } from './Icons';
 
 export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMealCaloriesChange }) {
   const [selectedDry, setSelectedDry] = useState(dryFoods[0].id);
@@ -123,10 +125,16 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMea
     setDryGramsOverride(null);
   }
 
+  const showDry = mode === 'dry' || mode === 'mix';
+  const showWet = mode === 'wet' || mode === 'mix';
+
   return (
-    <div className="card">
+    <section className="card">
       <div className="card-header">
-        <h2>Meal Calculator</h2>
+        <div className="card-title">
+          <span className="icon-badge icon-badge--leaf"><BowlIcon /></span>
+          <h2>Meal plan</h2>
+        </div>
         <Link to="/foods" className="manage-link">Manage foods</Link>
       </div>
 
@@ -134,32 +142,38 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMea
       <div className="food-selectors">
         <div className="input-group">
           <label htmlFor="dry-food">Dry food</label>
-          <select
-            id="dry-food"
-            value={selectedDry}
-            onChange={(e) => setSelectedDry(e.target.value)}
-          >
-            {dryFoods.map((f) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
-            ))}
-          </select>
+          <div className="select-wrap">
+            <select
+              id="dry-food"
+              value={selectedDry}
+              onChange={(e) => setSelectedDry(e.target.value)}
+            >
+              {dryFoods.map((f) => (
+                <option key={f.id} value={f.id}>{f.name}</option>
+              ))}
+            </select>
+            <ChevronDown />
+          </div>
         </div>
         <div className="input-group">
           <label htmlFor="wet-food">Wet food</label>
-          <select
-            id="wet-food"
-            value={selectedWet}
-            onChange={(e) => setSelectedWet(e.target.value)}
-          >
-            {wetFoods.map((f) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
-            ))}
-          </select>
+          <div className="select-wrap">
+            <select
+              id="wet-food"
+              value={selectedWet}
+              onChange={(e) => setSelectedWet(e.target.value)}
+            >
+              {wetFoods.map((f) => (
+                <option key={f.id} value={f.id}>{f.name}</option>
+              ))}
+            </select>
+            <ChevronDown />
+          </div>
         </div>
       </div>
 
       {/* Mode tabs */}
-      <div className="mode-tabs">
+      <div className="mode-tabs" role="group" aria-label="Feeding mode">
         {[
           { key: 'dry', label: '100% Dry' },
           { key: 'mix', label: 'Mix' },
@@ -167,6 +181,8 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMea
         ].map((m) => (
           <button
             key={m.key}
+            type="button"
+            aria-pressed={mode === m.key}
             className={`tab ${mode === m.key ? 'active' : ''}`}
             onClick={() => setMode(m.key)}
           >
@@ -177,17 +193,20 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMea
 
       {/* Mix slider */}
       {mode === 'mix' && (
-        <div className="mix-slider">
-          <label>
-            Wet/Dry split: {wetPct}% wet / {100 - wetPct}% dry
-          </label>
+        <div className="slider-group">
+          <div className="slider-head">
+            <label htmlFor="wet-split" className="field-label">Wet / dry split</label>
+            <span className="slider-value">{wetPct}% wet · {100 - wetPct}% dry</span>
+          </div>
           <input
+            id="wet-split"
             type="range"
             min="0"
             max="100"
             step="5"
             value={wetPct}
             onChange={(e) => handleSliderChange(e.target.value)}
+            style={{ background: sliderFill(wetPct, 0, 100) }}
           />
           <div className="slider-labels">
             <span>All dry</span>
@@ -197,73 +216,72 @@ export default function MealCalculator({ dryFoods, wetFoods, foodCalories, onMea
       )}
 
       {/* Results */}
-      <div className="results">
-        {/* Dry food row */}
-        {(mode === 'dry' || mode === 'mix') && (
-          <div className="result-row">
-            <span className="food-name">{dryFood.name}</span>
-            <span className="amount">
+      <div className={`portion-tiles ${mode === 'mix' ? '' : 'portion-tiles--single'}`}>
+        {showDry && (
+          <div className="portion-tile portion-tile--dry">
+            <span className="tile-kicker">Dry</span>
+            <span className="tile-name">{dryFood.name}</span>
+            <span className="tile-amount">
               {mode === 'mix' ? (
                 <input
                   type="number"
                   className="gram-input"
                   min="0"
+                  aria-label="Dry food grams"
                   value={dryGramsOverride !== null ? dryGramsOverride : displayDryGrams}
                   onChange={(e) => handleDryGramsChange(e.target.value)}
                   placeholder={displayDryGrams}
                 />
               ) : (
-                <span>{displayDryGrams}</span>
+                <span className="tile-big">{displayDryGrams}</span>
               )}
-              <span className="unit">g</span>
-              <span className="secondary">
-                ({displayDryCups.toFixed(2)} cups)
-              </span>
+              g
             </span>
-            <span className="kcal">{displayDryKcal} kcal</span>
+            <span className="tile-meta">
+              {displayDryCups.toFixed(2)} cups · {displayDryKcal} kcal
+            </span>
           </div>
         )}
 
-        {/* Wet food row */}
-        {(mode === 'wet' || mode === 'mix') && (
-          <div className="result-row">
-            <span className="food-name">{wetFood.name}</span>
-            <span className="amount">
+        {showWet && (
+          <div className="portion-tile portion-tile--wet">
+            <span className="tile-kicker">Wet</span>
+            <span className="tile-name">{wetFood.name}</span>
+            <span className="tile-amount">
               {mode === 'mix' ? (
                 <input
                   type="number"
                   className="gram-input"
                   min="0"
+                  aria-label="Wet food grams"
                   value={wetGramsOverride !== null ? wetGramsOverride : displayWetGrams}
                   onChange={(e) => handleWetGramsChange(e.target.value)}
                   placeholder={displayWetGrams}
                 />
               ) : (
-                <span>{displayWetGrams}</span>
+                <span className="tile-big">{displayWetGrams}</span>
               )}
-              <span className="unit">g</span>
+              g
             </span>
-            <span className="kcal">{displayWetKcal} kcal</span>
+            <span className="tile-meta">{displayWetKcal} kcal</span>
           </div>
-        )}
-
-        {overBudget && (
-          <p className="warning">
-            That amount exceeds the calorie budget — the other food is set to 0g.
-          </p>
         )}
       </div>
 
-      {mode === 'mix' && (
-        <p className="hint">
-          Edit either gram amount to auto-calculate the other.
+      {overBudget && (
+        <p className="warning">
+          That's more than the food budget, so the other food is set to 0 g.
         </p>
+      )}
+
+      {mode === 'mix' && (
+        <p className="hint">Edit either gram amount and the other one recalculates.</p>
       )}
 
       <div className="food-budget">
         <span className="label">Food calorie budget</span>
         <span className="value">{Math.round(foodCalories)} kcal</span>
       </div>
-    </div>
+    </section>
   );
 }
